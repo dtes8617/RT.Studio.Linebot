@@ -13,5 +13,7 @@ class Config:
     google_calendar_token = json.loads(config_parser.get('google-calendar', 'google_calendar_credential'))
     google_calendar_scope = [config_parser.get('google-calendar', 'google_calendar_scope')]
 
+    log_file_path = os.path.join(basedir, config_parser.get('default', 'log_file_path'))
+
 
 config = Config()
