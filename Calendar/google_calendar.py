@@ -1,40 +1,48 @@
-import datetime
+from datetime import datetime, timedelta
 
+import pandas as pd
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
+import log
 from config import config
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = config.google_calendar_scope
 TOKEN = config.google_calendar_token
 
 
-def main():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's Calendar.
-    """
-    creds = Credentials.from_authorized_user_info(TOKEN, SCOPES)
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+class CalendarHandler:
+    def __init__(self):
+        self.creds = None
+        self.service = None
 
-    service = build('Calendar', 'v3', credentials=creds)
+    def connect_to_server(self, token: dict = TOKEN, scopes: list = SCOPES):
+        self.creds = creds = Credentials.from_authorized_user_info(token, scopes)
+        self.service = build('Calendar', 'v3', credentials=creds)
+        log.info('Connected to Google Calendar api.')
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    events_result = service.events().list(calendarId='primary', timeMin=now,
-                                          maxResults=10, singleEvents=True,
-                                          orderBy='startTime').execute()
-    events = events_result.get('items', [])
+    def extract_events(self, eventBeginStartTime: datetime = None, eventLastStartTime: datetime = None) -> pd.DataFrame:
+        service = self.service
 
-    if not events:
-        print('No upcoming events found.')
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+        if not eventBeginStartTime:
+            eventBeginStartTime = datetime.now() \
+                .replace(hour=23, minute=59, second=59, microsecond=999999)
 
+        eventBeginStartTime = eventBeginStartTime.astimezone().isoformat()
 
-if __name__ == '__main__':
-    main()
+        if not eventLastStartTime:
+            eventLastStartTime = (datetime.now() + timedelta(days=2)) \
+                .replace(hour=0, minute=0, second=0, microsecond=0)
+
+        eventLastStartTime = eventLastStartTime.astimezone().isoformat()
+
+        events_result = service.events().list(calendarId='primary',
+                                              timeMin=eventBeginStartTime,
+                                              timeMax=eventLastStartTime,
+                                              singleEvents=True,
+                                              orderBy='startTime').execute()
+
+        events = events_result.get('items', [])
+        events_df = pd.DataFrame(events)
+
+        return events_df
