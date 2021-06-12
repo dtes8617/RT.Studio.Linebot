@@ -13,8 +13,8 @@ class Config:
     google_calendar_token = json.loads(config_parser.get('google-calendar', 'google_calendar_credential'))
     google_calendar_scope = [config_parser.get('google-calendar', 'google_calendar_scope')]
 
-    linebot_username = config_parser.get('line-bot', 'lineid')
-    linebot_password = config_parser.get('line-bot', 'linepassword')
+    linebot_access_token = config_parser.get('line-bot', 'linebot_access_token')
+    linebot_secret = config_parser.get('line-bot', 'linebot_secret')
 
     log_file_path = os.path.join(basedir, config_parser.get('default', 'log_file_path'))
 
