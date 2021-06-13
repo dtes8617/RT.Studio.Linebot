@@ -1,11 +1,12 @@
 import json
 import os
+
 from dotenv import load_dotenv
-from configparser import ConfigParser
 
 load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config:
     google_calendar_token = json.loads(os.getenv('GOOGLE_CALENDAR_CREDENTIAL'))
