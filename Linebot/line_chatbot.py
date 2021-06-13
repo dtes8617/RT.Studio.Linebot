@@ -1,7 +1,6 @@
 # 載入需要的模組
 from __future__ import unicode_literals
 import os
-from config import config
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -9,8 +8,8 @@ from linebot.exceptions import InvalidSignatureError
 app = Flask(__name__)
 
 # LINE 聊天機器人的基本資料
-line_bot_api = LineBotApi(config.linebot_access_token)
-handler = WebhookHandler(config.linebot_secret)
+line_bot_api = LineBotApi('聊天機器人的 Chennel access token')
+handler = WebhookHandler('聊天機器人的 Channel secret')
 
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
