@@ -1,22 +1,20 @@
 import json
 import os
+from dotenv import load_dotenv
 from configparser import ConfigParser
 
+load_dotenv()
+
 basedir = os.path.abspath(os.path.dirname(__file__))
-config_path = os.path.join(basedir, 'config.ini')
-
-config_parser = ConfigParser()
-config_parser.read(config_path)
-
 
 class Config:
-    google_calendar_token = json.loads(config_parser.get('google-calendar', 'google_calendar_credential'))
-    google_calendar_scope = [config_parser.get('google-calendar', 'google_calendar_scope')]
+    google_calendar_token = json.loads(os.getenv('GOOGLE_CALENDAR_CREDENTIAL'))
+    google_calendar_scope = [os.getenv('GOOGLE_CALENDAR_SCOPE')]
 
-    linebot_access_token = config_parser.get('line-bot', 'linebot_access_token')
-    linebot_secret = config_parser.get('line-bot', 'linebot_secret')
+    linebot_access_token = os.getenv('LINEBOT_ACCESS_TOKEN')
+    linebot_secret = os.getenv('LINEBOT_SECRET')
 
-    log_file_path = os.path.join(basedir, config_parser.get('default', 'log_file_path'))
+    log_file_path = os.path.join(basedir, os.getenv('LOG_FILE_PATH'))
 
 
 config = Config()
